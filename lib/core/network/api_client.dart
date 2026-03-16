@@ -22,8 +22,9 @@ class ApiClient {
 
     // Ensure secret key is not empty
     if (secretKey.isEmpty) {
+      // ❌ SECRET_KEY is missing!
       throw Exception(
-        'SECRET_KEY is not set. Please create a .env file with SECRET_KEY=your_key or use --dart-define=SECRET_KEY=your_key',
+        'An error occurred while loading the Data from the API',
       );
     }
 

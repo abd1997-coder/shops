@@ -15,9 +15,24 @@ class ShopsRepositoryImpl implements ShopsRepository {
       final shops = await remoteDataSource.getShops();
       return Right(shops);
     } on Exception catch (e) {
-      return Left(ServerFailure(e.toString()));
+      final errorMessage = e.toString();
+      
+      // Handle specific error types
+      if (errorMessage.contains('NO_INTERNET')) {
+        return const Left(NoInternetFailure());
+      } else if (errorMessage.contains('NO_DATA')) {
+        return const Left(NoDataFailure());
+      } else if (errorMessage.contains('TIMEOUT')) {
+        return const Left(TimeoutFailure());
+      } else if (errorMessage.contains('NETWORK_ERROR')) {
+        return Left(NetworkFailure(errorMessage));
+      } else if (errorMessage.contains('SERVER_ERROR')) {
+        return Left(ServerFailure(errorMessage));
+      } else {
+        return Left(ServerFailure(errorMessage));
+      }
     } catch (e) {
-      return Left(NetworkFailure('Network error: ${e.toString()}'));
+      return Left(NetworkFailure('Unexpected error: ${e.toString()}'));
     }
   }
 }

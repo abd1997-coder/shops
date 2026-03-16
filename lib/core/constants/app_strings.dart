@@ -23,4 +23,16 @@ class AppStrings {
   static const String deviceKind = 'deviceKind';
   static const String apply = 'Apply';
   static const String cancel = 'Cancel';
+  
+  // Network Error Messages
+  static const String noInternet = 'No Internet Connection';
+  static const String noInternetDescription = 'Please check your internet connection and try again';
+  static const String noData = 'No Data Available';
+  static const String noDataDescription = 'There are no shops available at the moment';
+  static const String timeoutError = 'Request Timeout';
+  static const String timeoutErrorDescription = 'The request took too long. Please try again';
+  static const String serverError = 'Server Error';
+  static const String serverErrorDescription = 'Something went wrong on our end. Please try again later';
+  static const String networkError = 'Network Error';
+  static const String networkErrorDescription = 'Unable to connect to the server. Please check your connection';
 }

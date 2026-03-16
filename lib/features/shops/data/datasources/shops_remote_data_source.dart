@@ -1,7 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:shops/core/constants/app_strings.dart';
-
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/api_client.dart';
+import '../../../../core/network/dio_error_handler.dart';
 import '../models/shop_model.dart';
 
 abstract class ShopsRemoteDataSource {
@@ -33,14 +34,28 @@ class ShopsRemoteDataSourceImpl implements ShopsRemoteDataSource {
         } else {
           throw Exception('Unexpected response format');
         }
+
+        // Check if data is empty
+        if (shopsList.isEmpty) {
+          throw Exception('NO_DATA');
+        }
+
         return shopsList
             .map((json) => ShopModel.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
         throw Exception('Failed to load shops: ${response.statusCode}');
       }
+    } on DioException catch (e) {
+      handleDioException(e);
     } catch (e) {
-      throw Exception('Error fetching shops: $e');
+      // Re-throw specific exceptions
+      if (e.toString().contains('NO_DATA') ||
+          e.toString().contains('NO_INTERNET') ||
+          e.toString().contains('TIMEOUT')) {
+        rethrow;
+      }
+      throw Exception('UNKNOWN_ERROR: ${e.toString()}');
     }
   }
 }

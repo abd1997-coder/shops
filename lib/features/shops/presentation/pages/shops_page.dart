@@ -121,31 +121,7 @@ class _ShopsPageState extends State<ShopsPage> {
     }
 
     if (state is ShopsError) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.errorOccurred,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => context.read<ShopsCubit>().loadShops(),
-              icon: const Icon(Icons.refresh),
-              label: const Text(AppStrings.retry),
-            ),
-          ],
-        ),
-      );
+      return _buildErrorWidget(state.message);
     }
 
     if (state is ShopsLoaded) {
@@ -187,5 +163,83 @@ class _ShopsPageState extends State<ShopsPage> {
     }
 
     return const SizedBox.shrink();
+  }
+
+  Widget _buildErrorWidget(String errorMessage) {
+    // Determine error type and show appropriate UI
+    IconData icon;
+    String title;
+    String description;
+    Color iconColor;
+
+    if (errorMessage.contains('No internet connection') ||
+        errorMessage.contains('NO_INTERNET')) {
+      icon = Icons.wifi_off;
+      title = AppStrings.noInternet;
+      description = AppStrings.noInternetDescription;
+      iconColor = Colors.orange;
+    } else if (errorMessage.contains('No data available') ||
+        errorMessage.contains('NO_DATA')) {
+      icon = Icons.inbox_outlined;
+      title = AppStrings.noData;
+      description = AppStrings.noDataDescription;
+      iconColor = Colors.blue;
+    } else if (errorMessage.contains('timeout') ||
+        errorMessage.contains('TIMEOUT')) {
+      icon = Icons.timer_off;
+      title = AppStrings.timeoutError;
+      description = AppStrings.timeoutErrorDescription;
+      iconColor = Colors.amber;
+    } else if (errorMessage.contains('SERVER_ERROR') ||
+        errorMessage.contains('Server error')) {
+      icon = Icons.dns_outlined;
+      title = AppStrings.serverError;
+      description = AppStrings.serverErrorDescription;
+      iconColor = Colors.red;
+    } else {
+      icon = Icons.error_outline;
+      title = AppStrings.networkError;
+      description = AppStrings.networkErrorDescription;
+      iconColor = Colors.red[300]!;
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 64, color: iconColor),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => context.read<ShopsCubit>().loadShops(),
+              icon: const Icon(Icons.refresh),
+              label: const Text(AppStrings.retry),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
